@@ -68,7 +68,7 @@
         }
         
         /* --- 3. Form Styling --- */
-        .form-section h2 {
+        .form-section h2, .preview-section h2, .generated-certs-section h2 {
             color: var(--primary-color);
             border-bottom: 2px solid var(--secondary-color);
             padding-bottom: 5px;
@@ -114,46 +114,89 @@
         }
 
         /* --- 4. Certificate Preview & Sample --- */
-        .preview-section h2 {
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--secondary-color);
-            padding-bottom: 5px;
-        }
-
-        .certificate-sample {
-            border: 10px solid #c5a34c;
-            padding: 20px;
-            background: #fdfdfa;
-            box-shadow: 0 0 10px rgba(0,0,0,0.2);
-            position: relative;
-        }
-        
         .cert-header-sample {
             text-align: center;
             margin-bottom: 20px;
         }
 
         .cert-header-sample img {
-            width: 60px;
+            width: 100%;
+            max-width: 700px;
             height: auto;
         }
-
-        .cert-uni-name-sample {
-            font-family: 'Mate SC', serif;
-            font-size: 2em;
-            color: #000;
-            margin: 5px 0;
-        }
-
-        .cert-body-sample {
-            text-align: center;
-            font-size: 0.9em;
-            color: #555;
-        }
-        .cert-body-sample p { margin: 8px 0; }
-        .cert-body-sample .highlight { font-weight: bold; color: #000; }
         
-        /* --- 5. Support & Account Details --- */
+        /* --- 5. Find Saved Certificates Section --- */
+        .generated-certs-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        #searchCerts {
+            flex-grow: 1;
+        }
+
+        #find-cert-btn {
+            padding: 10px 20px;
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        #find-cert-btn:hover {
+             background-color: #c5a34c;
+        }
+        
+        #saved-certs-list {
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            background: #fff;
+        }
+
+        .saved-cert-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .saved-cert-item:last-child { border-bottom: none; }
+        .cert-item-info strong { color: var(--primary-color); }
+        .view-cert-btn {
+            padding: 5px 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s;
+        }
+        .view-cert-btn:hover { background-color: #071a3d; }
+        .certs-message {
+            color: #777;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* --- 6. Support & Account Details --- */
         .support-section {
             margin-top: 30px;
             padding: 20px;
@@ -168,7 +211,7 @@
             color: var(--primary-color);
         }
 
-        /* --- 6. Modal (Pop-up) Styles --- */
+        /* --- 7. Modal (Pop-up) Styles --- */
         .modal {
             display: none;
             position: fixed;
@@ -237,7 +280,7 @@
         }
         #confirm-payment-btn:hover { background-color: #218838; }
 
-        /* --- 7. Final Generated Certificate Styles --- */
+        /* --- 8. Final Generated Certificate Styles --- */
         #certificate-modal .modal-content {
             max-width: 840px; /* A4 landscape-like aspect ratio */
             width: 95%;
@@ -323,7 +366,7 @@
             color: #999;
         }
 
-        /* --- 8. Print & Download Buttons --- */
+        /* --- 9. Print & Download Buttons --- */
         .action-buttons {
             margin-top: 20px;
             display: flex;
@@ -344,7 +387,7 @@
         #download-btn { background-color: #28a745; }
 
 
-        /* --- 9. Responsive and Print Styles --- */
+        /* --- 10. Responsive and Print Styles --- */
         @media (max-width: 768px) {
             .content-wrapper { flex-direction: column; }
             body { padding: 10px; }
@@ -353,6 +396,7 @@
             #cert-student-name { font-size: 2em; }
             .certificate-footer { flex-direction: column; align-items: center; gap: 20px;}
             .footer-item { width: 80%; }
+            .search-container { flex-direction: column; align-items: stretch; }
         }
         
         @media print {
@@ -395,7 +439,7 @@
                     </div>
                     <div class="form-group">
                         <label for="courseOfStudy">Course/Program of Study</label>
-                        <input type="text" id="courseOfStudy" name="courseOfStudy" placeholder="e.g., Gbim science" required>
+                        <input type="text" id="courseOfStudy" name="courseOfStudy" placeholder="e.g., Wisdom science" required>
                     </div>
                     <div class="form-group">
                         <label for="degreeType">Type of Degree</label>
@@ -427,9 +471,22 @@
             <!-- Certificate Preview Section -->
             <div class="preview-section">
                 <h2>Certificate Sample</h2>
-                    <div class="cert-header-sample">
-                        <img src="images/man.jpeg" alt="Graduation Cap" style="height: 800px; width: 700px;">   
-                    </div>
+                <div class="cert-header-sample">
+                    <img src="images/man.jpeg" alt="Placeholder Image">
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW: Find Previously Generated Certificates Section -->
+        <div class="generated-certs-section">
+            <h2>Find Previously Generated Certificate</h2>
+            <p>Enter the applicant's name or course to find a certificate that has already been generated on this device.</p>
+            <div class="search-container">
+                <input type="text" id="searchCerts" placeholder="e.g., John Doe or Gbim science">
+                <button id="find-cert-btn">Find Certificate</button>
+            </div>
+            <div id="saved-certs-list">
+                 <p class="certs-message">Enter a search term and click "Find Certificate" to see results.</p>
             </div>
         </div>
 
@@ -509,139 +566,215 @@
     </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // --- 1. Get DOM Elements ---
-        const form = document.getElementById('certificate-form');
-        const paymentModal = document.getElementById('payment-modal');
-        const certificateModal = document.getElementById('certificate-modal');
-        const closePaymentBtn = document.getElementById('close-payment-modal');
-        const closeCertBtn = document.getElementById('close-cert-modal');
-        const confirmPaymentBtn = document.getElementById('confirm-payment-btn');
-        const passcode_input = document.getElementById('passcode');
-        const printBtn = document.getElementById('print-btn');
-        const downloadBtn = document.getElementById('download-btn');
-        const finalCertificate = document.getElementById('final-certificate');
+document.addEventListener('DOMContentLoaded', () => {
+    // --- 1. Get DOM Elements ---
+    const form = document.getElementById('certificate-form');
+    const paymentModal = document.getElementById('payment-modal');
+    const certificateModal = document.getElementById('certificate-modal');
+    const closePaymentBtn = document.getElementById('close-payment-modal');
+    const closeCertBtn = document.getElementById('close-cert-modal');
+    const confirmPaymentBtn = document.getElementById('confirm-payment-btn');
+    const passcode_input = document.getElementById('passcode');
+    const printBtn = document.getElementById('print-btn');
+    const downloadBtn = document.getElementById('download-btn');
+    const finalCertificate = document.getElementById('final-certificate');
+    const searchInput = document.getElementById('searchCerts');
+    const findCertBtn = document.getElementById('find-cert-btn');
+    const savedCertsListContainer = document.getElementById('saved-certs-list');
 
-        // --- 2. Master Passcode & Degree Prices ---
-        const MASTER_PASSCODE = '22055'; // The 5-digit code for "payment"
-        const degreePrices = {
-            PHD: { name: 'Doctor of Philosophy (PHD)', price: '10,000 NAIRA' },
-            MSC: { name: 'Master of Science (MSC)', price: '8,000 NAIRA' },
-            BSC: { name: 'Bachelor of Science (BSC)', price: '5,000 NAIRA' },
-            HND: { name: 'Higher National Diploma (HND)', price: '4,000 NAIRA' },
-            OND: { name: 'Ordinary National Diploma (OND)', price: '3,000 NAIRA' },
-        };
+    // --- 2. Master Passcode & Data ---
+    const MASTER_PASSCODE = '22055';
+    const degreePrices = {
+        PHD: { name: 'Doctor of Philosophy (PHD)', price: '10,000 NAIRA' },
+        MSC: { name: 'Master of Science (MSC)', price: '8,000 NAIRA' },
+        BSC: { name: 'Bachelor of Science (BSC)', price: '5,000 NAIRA' },
+        HND: { name: 'Higher National Diploma (HND)', price: '4,000 NAIRA' },
+        OND: { name: 'Ordinary National Diploma (OND)', price: '3,000 NAIRA' },
+    };
 
-        let currentFormData = {};
+    let currentFormData = {};
+    let savedCertificates = [];
 
-        // --- 3. Form Submission Logic ---
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
+    // --- 3. Certificate Data Management ---
+    function loadSavedCertificates() {
+        const certsJSON = localStorage.getItem('gguSavedCertificates');
+        savedCertificates = certsJSON ? JSON.parse(certsJSON) : [];
+    }
 
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
+    function saveNewCertificate(certData) {
+        savedCertificates.push(certData);
+        localStorage.setItem('gguSavedCertificates', JSON.stringify(savedCertificates));
+    }
 
-            if (!data.fullName || !data.courseOfStudy || !data.degreeType || !data.gradYear || !data.studentId) {
-                alert('Please fill in all required fields.');
-                return;
-            }
+    function renderSearchResults(filterText) {
+        savedCertsListContainer.innerHTML = '';
+        if (!filterText) {
+             savedCertsListContainer.innerHTML = `<p class="certs-message">Enter a search term and click "Find Certificate" to see results.</p>`;
+             return;
+        }
 
-            const uniqueIdentifier = `${data.fullName.trim().toLowerCase()}_${data.courseOfStudy.trim().toLowerCase()}`;
-            if (localStorage.getItem(uniqueIdentifier)) {
-                alert('A certificate for this course has already been generated for this applicant. You can generate a certificate for a different course.');
-                return;
-            }
+        const lowerCaseFilter = filterText.toLowerCase();
+        const filteredCerts = savedCertificates.filter(cert =>
+            cert.fullName.toLowerCase().includes(lowerCaseFilter) ||
+            cert.courseOfStudy.toLowerCase().includes(lowerCaseFilter)
+        );
 
-            currentFormData = data;
-            
-            document.getElementById('payment-degree').textContent = degreePrices[data.degreeType].name;
-            document.getElementById('payment-amount').textContent = degreePrices[data.degreeType].price;
-            paymentModal.style.display = 'flex';
+        if (filteredCerts.length === 0) {
+            savedCertsListContainer.innerHTML = `<p class="certs-message">No matching certificates found.</p>`;
+            return;
+        }
+
+        filteredCerts.forEach((cert) => {
+            const originalIndex = savedCertificates.findIndex(c => c.certNumber === cert.certNumber);
+            const item = document.createElement('div');
+            item.className = 'saved-cert-item';
+            item.innerHTML = `
+                <span class="cert-item-info">
+                    <strong>${cert.fullName}</strong> - ${cert.courseOfStudy}
+                </span>
+                <button class="view-cert-btn" data-cert-index="${originalIndex}">View/Print</button>
+            `;
+            savedCertsListContainer.appendChild(item);
         });
+    }
 
-        // --- 4. Payment Confirmation Logic ---
-        confirmPaymentBtn.addEventListener('click', () => {
-            if (passcode_input.value === MASTER_PASSCODE) {
-                paymentModal.style.display = 'none';
-                passcode_input.value = '';
-                generateCertificate(currentFormData);
-            } else {
-                alert('Invalid passcode. Payment not confirmed. Certificate cannot be generated.');
-            }
-        });
+    // --- 4. Form & Payment Logic ---
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
 
-        // --- 5. Certificate Generation Function ---
-        function generateCertificate(data) {
-            document.getElementById('cert-student-name').textContent = data.fullName;
-            document.getElementById('cert-student-id').textContent = `Student ID: ${data.studentId}`;
-            document.getElementById('cert-degree-type').textContent = degreePrices[data.degreeType].name;
-            document.getElementById('cert-course').textContent = data.courseOfStudy;
-            document.getElementById('cert-date').textContent = data.gradYear;
-            
-            const certNumber = 'GGU-' + Math.random().toString().substr(2, 8).toUpperCase();
-            document.getElementById('cert-number').textContent = `Cert No: ${certNumber}`;
+        if (!data.fullName || !data.courseOfStudy || !data.degreeType || !data.gradYear || !data.studentId) {
+            alert('Please fill in all required fields.');
+            return;
+        }
 
-            const photoInput = document.getElementById('photoId');
-            const photoContainer = document.getElementById('cert-photo-container');
-            const photoImg = document.getElementById('cert-photo-id');
-            const photoPlaceholder = photoContainer.querySelector('span');
+        const isDuplicate = savedCertificates.some(cert =>
+            cert.fullName.trim().toLowerCase() === data.fullName.trim().toLowerCase() &&
+            cert.courseOfStudy.trim().toLowerCase() === data.courseOfStudy.trim().toLowerCase()
+        );
 
+        if (isDuplicate) {
+            alert('A certificate for this course has already been generated for this applicant. You can find it in the "Find Previously Generated Certificate" section below.');
+            return;
+        }
+
+        currentFormData = data;
+        document.getElementById('payment-degree').textContent = degreePrices[data.degreeType].name;
+        document.getElementById('payment-amount').textContent = degreePrices[data.degreeType].price;
+        paymentModal.style.display = 'flex';
+    });
+
+    confirmPaymentBtn.addEventListener('click', () => {
+        if (passcode_input.value === MASTER_PASSCODE) {
+            paymentModal.style.display = 'none';
+            passcode_input.value = '';
+            generateAndSaveCertificate(currentFormData);
+        } else {
+            alert('Invalid passcode. Payment not confirmed.');
+        }
+    });
+
+    // --- 5. Certificate Generation & Display ---
+    function generateAndSaveCertificate(data) {
+        const certNumber = 'GGU-' + Math.random().toString().substr(2, 8).toUpperCase();
+        const photoInput = document.getElementById('photoId');
+
+        const getPhotoDataUrl = new Promise((resolve) => {
             if (photoInput.files && photoInput.files[0]) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    photoImg.src = e.target.result;
-                    photoImg.style.display = 'block';
-                    photoPlaceholder.style.display = 'none';
-                }
+                reader.onload = (e) => resolve(e.target.result);
                 reader.readAsDataURL(photoInput.files[0]);
             } else {
-                photoImg.src = '';
-                photoImg.style.display = 'none';
-                photoPlaceholder.style.display = 'block';
+                resolve(null);
             }
+        });
 
-            certificateModal.style.display = 'flex';
-            
-            const uniqueIdentifier = `${data.fullName.trim().toLowerCase()}_${data.courseOfStudy.trim().toLowerCase()}`;
-            localStorage.setItem(uniqueIdentifier, 'generated');
-            
+        getPhotoDataUrl.then(photoDataUrl => {
+            const fullCertData = { ...data, certNumber, photoDataUrl };
+            saveNewCertificate(fullCertData);
+            displayCertificate(fullCertData);
             form.reset();
+        });
+    }
+
+    function displayCertificate(data) {
+        // Update currentFormData for download/print context
+        currentFormData = data;
+
+        document.getElementById('cert-student-name').textContent = data.fullName;
+        document.getElementById('cert-student-id').textContent = `Student ID: ${data.studentId}`;
+        document.getElementById('cert-degree-type').textContent = degreePrices[data.degreeType].name;
+        document.getElementById('cert-course').textContent = data.courseOfStudy;
+        document.getElementById('cert-date').textContent = data.gradYear;
+        document.getElementById('cert-number').textContent = `Cert No: ${data.certNumber}`;
+
+        const photoImg = document.getElementById('cert-photo-id');
+        const photoPlaceholder = document.querySelector('#cert-photo-container span');
+
+        if (data.photoDataUrl) {
+            photoImg.src = data.photoDataUrl;
+            photoImg.style.display = 'block';
+            photoPlaceholder.style.display = 'none';
+        } else {
+            photoImg.src = '';
+            photoImg.style.display = 'none';
+            photoPlaceholder.style.display = 'block';
         }
+        certificateModal.style.display = 'flex';
+    }
 
-        // --- 6. Print & Download Handlers ---
-        printBtn.addEventListener('click', () => {
-            window.print();
-        });
-
-        downloadBtn.addEventListener('click', () => {
-            const studentName = currentFormData.fullName.replace(/\s+/g, '_') || 'student';
-            const options = {
-                margin: 0.5,
-                filename: `GehGeh_University_Certificate_${studentName}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
-            };
-
-            // Use html2pdf library to generate and download PDF
-            html2pdf().from(finalCertificate).set(options).save();
-        });
-
-        // --- 7. Modal Closing Logic ---
-        function closeModal(modal) {
-            modal.style.display = 'none';
-        }
-
-        closePaymentBtn.addEventListener('click', () => closeModal(paymentModal));
-        closeCertBtn.addEventListener('click', () => closeModal(certificateModal));
-
-        window.addEventListener('click', (event) => {
-            if (event.target == paymentModal) closeModal(paymentModal);
-            if (event.target == certificateModal) closeModal(certificateModal);
-        });
+    // --- 6. Event Listeners for Actions ---
+    findCertBtn.addEventListener('click', () => {
+        renderSearchResults(searchInput.value);
     });
+    
+    // Also allow searching by pressing Enter in the input field
+    searchInput.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') {
+            renderSearchResults(searchInput.value);
+        }
+    });
+
+    savedCertsListContainer.addEventListener('click', (e) => {
+        if (e.target.classList.contains('view-cert-btn')) {
+            const certIndex = e.target.getAttribute('data-cert-index');
+            if (certIndex !== null) {
+                const certData = savedCertificates[parseInt(certIndex)];
+                displayCertificate(certData);
+            }
+        }
+    });
+
+    printBtn.addEventListener('click', () => window.print());
+
+    downloadBtn.addEventListener('click', () => {
+        const studentName = currentFormData.fullName.replace(/\s+/g, '_') || 'student';
+        const options = {
+            margin: 0.5,
+            filename: `GehGeh_University_Certificate_${studentName}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
+        };
+        html2pdf().from(finalCertificate).set(options).save();
+    });
+
+    // --- 7. Modal Closing Logic ---
+    function closeModal(modal) {
+        modal.style.display = 'none';
+    }
+    closePaymentBtn.addEventListener('click', () => closeModal(paymentModal));
+    closeCertBtn.addEventListener('click', () => closeModal(certificateModal));
+    window.addEventListener('click', (event) => {
+        if (event.target == paymentModal) closeModal(paymentModal);
+        if (event.target == certificateModal) closeModal(certificateModal);
+    });
+
+    // --- 8. Initial Load ---
+    loadSavedCertificates();
+});
 </script>
 
 </body>
 </html>
-
