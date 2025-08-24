@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghe Ghe University - Certificate Generator</title>
+    
+    <!-- Google Fonts for professional look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mate+SC&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+
+    <!-- Library for PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        /* --- 1. General & Body Styles --- */
+        :root {
+            --primary-color: #0a2351;
+            --secondary-color: #d4af37;
+            --background-color: #f4f4f9;
+            --text-color: #333;
+            --border-color: #ccc;
+        }
+
+        body {
+            font-family: 'Merriweather', serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        /* --- 2. Main Layout & Containers --- */
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            font-family: 'Mate SC', serif;
+            color: var(--primary-color);
+            font-size: 2.5em;
+            margin: 0;
+        }
+
+        .content-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .form-section, .preview-section {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        /* --- 3. Form Styling --- */
+        .form-section h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 5px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-family: 'Merriweather', serif;
+        }
+        
+        .form-group input[type="file"] {
+            padding: 3px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-submit:hover {
+            background-color: #071a3d;
+        }
+
+        /* --- 4. Certificate Preview & Sample --- */
+        .preview-section h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 5px;
+        }
+
+        .certificate-sample {
+            border: 10px solid #c5a34c;
+            padding: 20px;
+            background: #fdfdfa;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        
+        .cert-header-sample {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .cert-header-sample img {
+            width: 60px;
+            height: auto;
+        }
+
+        .cert-uni-name-sample {
+            font-family: 'Mate SC', serif;
+            font-size: 2em;
+            color: #000;
+            margin: 5px 0;
+        }
+
+        .cert-body-sample {
+            text-align: center;
+            font-size: 0.9em;
+            color: #555;
+        }
+        .cert-body-sample p { margin: 8px 0; }
+        .cert-body-sample .highlight { font-weight: bold; color: #000; }
+        
+        /* --- 5. Support & Account Details --- */
+        .support-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e9efff;
+            border: 1px solid #b9cfff;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .support-section h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        /* --- 6. Modal (Pop-up) Styles --- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-btn:hover, .close-btn:focus { color: black; }
+
+
+        #payment-info {
+            text-align: left;
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        #payment-info p { margin: 5px 0; }
+        #payment-amount { font-weight: bold; font-size: 1.2em; color: var(--primary-color); }
+
+        #passcode {
+            padding: 10px;
+            width: 50%;
+            text-align: center;
+            font-size: 1.2em;
+            margin-top: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+        }
+
+        #confirm-payment-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 15px;
+        }
+        #confirm-payment-btn:hover { background-color: #218838; }
+
+        /* --- 7. Final Generated Certificate Styles --- */
+        #certificate-modal .modal-content {
+            max-width: 840px; /* A4 landscape-like aspect ratio */
+            width: 95%;
+        }
+
+        .certificate-container {
+            border: 12px double var(--secondary-color);
+            padding: 30px;
+            background: white;
+            position: relative;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .certificate-header { margin-bottom: 20px; }
+        #cert-logo { width: 80px; }
+        #cert-uni-name {
+            font-family: 'Mate SC', serif;
+            font-size: 3em;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+        #cert-uni-address { font-size: 1em; color: #555; }
+        .certificate-body { font-size: 1.1em; margin: 30px 0; }
+        #cert-student-name {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #000;
+            display: block;
+            margin: 15px 0;
+        }
+        #cert-student-id { font-size: 0.9em; color: #666; display: block; margin-bottom: 15px; }
+        .certificate-footer {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            margin-top: 40px;
+        }
+        .footer-item { text-align: center; width: 33%; }
+        #cert-photo-container {
+            width: 100px;
+            height: 120px;
+            border: 2px solid var(--secondary-color);
+            background-color: #f0f0f0;
+            margin: 0 auto 5px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #999;
+            font-size: 0.8em;
+            overflow: hidden;
+        }
+        #cert-photo-id { max-width: 100%; max-height: 100%; }
+        .signature { font-family: 'Dancing Script', cursive; font-size: 1.8em; }
+        .signature-line {
+            border-top: 1px solid #000;
+            margin-top: 30px;
+            padding-top: 5px;
+            font-size: 0.9em;
+        }
+        .stamp {
+            position: absolute;
+            bottom: 60px;
+            right: 15%;
+            width: 120px;
+            height: 120px;
+            border: 5px double var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0.2;
+            transform: rotate(-15deg);
+        }
+        .stamp-text { color: var(--primary-color); font-weight: bold; text-align: center; line-height: 1.1; }
+        #cert-number {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            font-size: 0.7em;
+            color: #999;
+        }
+
+        /* --- 8. Print & Download Buttons --- */
+        .action-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        .action-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        .action-btn:hover { opacity: 0.8; }
+        #print-btn { background-color: #007bff; }
+        #download-btn { background-color: #28a745; }
+
+
+        /* --- 9. Responsive and Print Styles --- */
+        @media (max-width: 768px) {
+            .content-wrapper { flex-direction: column; }
+            body { padding: 10px; }
+            header h1 { font-size: 2em; }
+            #cert-uni-name { font-size: 2em; }
+            #cert-student-name { font-size: 2em; }
+            .certificate-footer { flex-direction: column; align-items: center; gap: 20px;}
+            .footer-item { width: 80%; }
+        }
+        
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #final-certificate, #final-certificate * {
+                visibility: visible;
+            }
+            #final-certificate {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                border: 10px double var(--secondary-color) !important;
+                -webkit-print-color-adjust: exact; /* Ensures background colors and images print */
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <header>
+            <h1>Ghe Ghe University</h1>
+            <p>Of wisdom and understanding</p>
+            <p>Official Certificate Generation Portal</p>
+        </header>
+        <p>Kindly ensure that you have passed all courses before applying for certificate. </p>
+
+        <div class="content-wrapper">
+            <!-- Form Section -->
+            <div class="form-section">
+                <h2>Enter Your Details</h2>
+                <form id="certificate-form">
+                    <div class="form-group">
+                        <label for="fullName">Applicant's Full Name</label>
+                        <input type="text" id="fullName" name="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="courseOfStudy">Course/Program of Study</label>
+                        <input type="text" id="courseOfStudy" name="courseOfStudy" placeholder="e.g., Gbim science" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="degreeType">Type of Degree</label>
+                        <select id="degreeType" name="degreeType" required>
+                            <option value="">-- Select Degree --</option>
+                            <option value="PHD">Doctor of Philosophy (PHD) - 10,000 NGN</option>
+                            <option value="MSC">Master of Science (MSC) - 8,000 NGN</option>
+                            <option value="BSC">Bachelor of Science (BSC) - 5,000 NGN</option>
+                            <option value="HND">Higher National Diploma (HND) - 4,000 NGN</option>
+                            <option value="OND">Ordinary National Diploma (OND) - 3,000 NGN</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="gradYear">Year of Graduation</label>
+                        <input type="number" id="gradYear" name="gradYear" placeholder="e.g., 2025" required min="1950" max="2099">
+                    </div>
+                    <div class="form-group">
+                        <label for="studentId">ID Card Number</label>
+                        <input type="text" id="studentId" name="studentId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="photoId">Upload Photo ID (Optional)</label>
+                        <input type="file" id="photoId" name="photoId" accept="image/*">
+                    </div>
+                    <button type="submit" class="btn-submit">Generate Certificate</button>
+                </form>
+            </div>
+
+            <!-- Certificate Preview Section -->
+            <div class="preview-section">
+                <h2>Certificate Sample</h2>
+                    <div class="cert-header-sample">
+                        <img src="images/man.jpeg" alt="Graduation Cap" style="height: 800px; width: 800px;">   
+                    </div>
+            </div>
+        </div>
+
+        <!-- Support Section -->
+        <div class="support-section">
+            <h3>Support our team for more updates</h3>
+            <p><strong>Account Name:</strong> Asoluka Charles</p>
+            <p><strong>Bank:</strong> Sterling Bank</p>
+            <p><strong>Account No:</strong> 0087955308</p>
+            <P>Call: 09068420849 to confirm payment and get passcode to generate ceritificate</P>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="payment-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-payment-modal">&times;</span>
+            <h2>Payment Confirmation</h2>
+            <p>To generate your certificate, please confirm payment by entering the 5-digit passcode.</p>
+            <div id="payment-info">
+                <p><strong>Degree:</strong> <span id="payment-degree"></span></p>
+                <p><strong>Amount Due:</strong> <span id="payment-amount"></span></p>
+            </div>
+            <label for="passcode">Enter 5-Digit Passcode:</label><br>
+            <input type="password" id="passcode" maxlength="5" placeholder="*****">
+            <br>
+            <button id="confirm-payment-btn">Confirm & Generate</button>
+        </div>
+    </div>
+
+    <!-- Generated Certificate Modal -->
+    <div id="certificate-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-cert-modal">&times;</span>
+            <div id="final-certificate">
+                <div class="certificate-container">
+                    <div class="certificate-header">
+                        <img id="cert-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAARnSURBVHhe7ZtPaBxlHMc/5y7S1i41E1sECyUKHkoQvFTSCkFPPeitoUeCHnyLp55UEY9gLyWIHkTsIfYgSA/2oL/gTyDqXkAEI0ihaOtlbbPZu9mZ92d+28267O7sLpIHzsDs7rwz7/vjefO9/8yIIigGimCgCASDoCAgCAiCYgAoAoFhUBBwEAQERQFRIAgGh0FBwEEQEEwMBZGAQDAYFAQcBAFBElAUDAKDYVDAQRBwEAQEUkAUMAgGg6CAgyDgIAgIooCiYDAYDIWCAg6CgCAgKAmKAmAYBgVBYRAYDAYCBYGgYDAYBgWBgSAgKAGKgCAgKAYqAoFhUBBwEAQERQFRIAgGh0FBwEEQEEwM9x9/tF2eA+ZRGQAAAABJRU5ErkJggg==" alt="Ghe Ghe University Logo">
+                        <h2 id="cert-uni-name">Ghe Ghe University</h2>
+                        <p id="cert-uni-address">Delta State, Nigeria</p>
+                    </div>
+                    <div class="certificate-body">
+                        <p>This is to certify that</p>
+                        <span id="cert-student-name"></span>
+                        <span id="cert-student-id"></span>
+                        <p>has successfully completed the program of study, fulfilling all the requirements for the degree of</p>
+                        <p><strong id="cert-degree-type"></strong></p>
+                        <p>in</p>
+                        <p><strong id="cert-course"></strong></p>
+                    </div>
+                    <div class="certificate-footer">
+                        <div class="footer-item">
+                            <div id="cert-photo-container">
+                                <img id="cert-photo-id" src="" alt="Student Photo">
+                                <span>Photo ID</span>
+                            </div>
+                            Date of Completion: <strong id="cert-date"></strong>
+                        </div>
+                        <div class="footer-item">
+                            <p class="signature">Ghe-Ghe</p>
+                            <p class="signature-line">Authorized Signature</p>
+                            <p>Name: Ghe-Ghe</p>
+                        </div>
+                    </div>
+                    <div class="stamp">
+                        <span class="stamp-text">GHE GHE<br>UNIVERSITY<br>OFFICIAL</span>
+                    </div>
+                    <span id="cert-number"></span>
+                </div>
+            </div>
+            <!-- Action Buttons for Print/Download -->
+            <div class="action-buttons">
+                <button id="print-btn" class="action-btn">Print Certificate</button>
+                <button id="download-btn" class="action-btn">Download as PDF</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- 1. Get DOM Elements ---
+        const form = document.getElementById('certificate-form');
+        const paymentModal = document.getElementById('payment-modal');
+        const certificateModal = document.getElementById('certificate-modal');
+        const closePaymentBtn = document.getElementById('close-payment-modal');
+        const closeCertBtn = document.getElementById('close-cert-modal');
+        const confirmPaymentBtn = document.getElementById('confirm-payment-btn');
+        const passcode_input = document.getElementById('passcode');
+        const printBtn = document.getElementById('print-btn');
+        const downloadBtn = document.getElementById('download-btn');
+        const finalCertificate = document.getElementById('final-certificate');
+
+        // --- 2. Master Passcode & Degree Prices ---
+        const MASTER_PASSCODE = '22055'; // The 5-digit code for "payment"
+        const degreePrices = {
+            PHD: { name: 'Doctor of Philosophy (PHD)', price: '10,000 NAIRA' },
+            MSC: { name: 'Master of Science (MSC)', price: '8,000 NAIRA' },
+            BSC: { name: 'Bachelor of Science (BSC)', price: '5,000 NAIRA' },
+            HND: { name: 'Higher National Diploma (HND)', price: '4,000 NAIRA' },
+            OND: { name: 'Ordinary National Diploma (OND)', price: '3,000 NAIRA' },
+        };
+
+        let currentFormData = {};
+
+        // --- 3. Form Submission Logic ---
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            if (!data.fullName || !data.courseOfStudy || !data.degreeType || !data.gradYear || !data.studentId) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            const uniqueIdentifier = `${data.fullName.trim().toLowerCase()}_${data.courseOfStudy.trim().toLowerCase()}`;
+            if (localStorage.getItem(uniqueIdentifier)) {
+                alert('A certificate for this course has already been generated for this applicant. You can generate a certificate for a different course.');
+                return;
+            }
+
+            currentFormData = data;
+            
+            document.getElementById('payment-degree').textContent = degreePrices[data.degreeType].name;
+            document.getElementById('payment-amount').textContent = degreePrices[data.degreeType].price;
+            paymentModal.style.display = 'flex';
+        });
+
+        // --- 4. Payment Confirmation Logic ---
+        confirmPaymentBtn.addEventListener('click', () => {
+            if (passcode_input.value === MASTER_PASSCODE) {
+                paymentModal.style.display = 'none';
+                passcode_input.value = '';
+                generateCertificate(currentFormData);
+            } else {
+                alert('Invalid passcode. Payment not confirmed. Certificate cannot be generated.');
+            }
+        });
+
+        // --- 5. Certificate Generation Function ---
+        function generateCertificate(data) {
+            document.getElementById('cert-student-name').textContent = data.fullName;
+            document.getElementById('cert-student-id').textContent = `Student ID: ${data.studentId}`;
+            document.getElementById('cert-degree-type').textContent = degreePrices[data.degreeType].name;
+            document.getElementById('cert-course').textContent = data.courseOfStudy;
+            document.getElementById('cert-date').textContent = data.gradYear;
+            
+            const certNumber = 'GGU-' + Math.random().toString().substr(2, 8).toUpperCase();
+            document.getElementById('cert-number').textContent = `Cert No: ${certNumber}`;
+
+            const photoInput = document.getElementById('photoId');
+            const photoContainer = document.getElementById('cert-photo-container');
+            const photoImg = document.getElementById('cert-photo-id');
+            const photoPlaceholder = photoContainer.querySelector('span');
+
+            if (photoInput.files && photoInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    photoImg.src = e.target.result;
+                    photoImg.style.display = 'block';
+                    photoPlaceholder.style.display = 'none';
+                }
+                reader.readAsDataURL(photoInput.files[0]);
+            } else {
+                photoImg.src = '';
+                photoImg.style.display = 'none';
+                photoPlaceholder.style.display = 'block';
+            }
+
+            certificateModal.style.display = 'flex';
+            
+            const uniqueIdentifier = `${data.fullName.trim().toLowerCase()}_${data.courseOfStudy.trim().toLowerCase()}`;
+            localStorage.setItem(uniqueIdentifier, 'generated');
+            
+            form.reset();
+        }
+
+        // --- 6. Print & Download Handlers ---
+        printBtn.addEventListener('click', () => {
+            window.print();
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            const studentName = currentFormData.fullName.replace(/\s+/g, '_') || 'student';
+            const options = {
+                margin: 0.5,
+                filename: `GheGhe_University_Certificate_${studentName}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
+            };
+
+            // Use html2pdf library to generate and download PDF
+            html2pdf().from(finalCertificate).set(options).save();
+        });
+
+        // --- 7. Modal Closing Logic ---
+        function closeModal(modal) {
+            modal.style.display = 'none';
+        }
+
+        closePaymentBtn.addEventListener('click', () => closeModal(paymentModal));
+        closeCertBtn.addEventListener('click', () => closeModal(certificateModal));
+
+        window.addEventListener('click', (event) => {
+            if (event.target == paymentModal) closeModal(paymentModal);
+            if (event.target == certificateModal) closeModal(certificateModal);
+        });
+    });
+</script>
+
+</body>
+</html>
